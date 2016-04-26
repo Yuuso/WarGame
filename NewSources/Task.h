@@ -2,12 +2,7 @@
 #pragma once
 
 
-class Task
+enum Task
 {
-public:
-	Task();
-	virtual ~Task();
-
 
 };
-

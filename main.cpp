@@ -10,6 +10,8 @@
 #include "ExampleBehaviours.h"
 #include "JoystickController.h"
 
+#include "NewSources/MemberAI.h"
+
 
 
 class MyAI : public CharacterController
@@ -56,6 +58,7 @@ class MyPlayerController : public PlayerController
 private:
 	std::string m_myTeamName;
 	std::vector< yam2d::Ref<MyAI> > m_myAIControllers;
+	std::vector< yam2d::Ref<MemberAI> > m_memberAIControllers;
 	std::vector< yam2d::Ref<JoystickController> > m_joystickControllers;
 	std::vector< yam2d::Ref<DirectMoverAI> > m_directMoverAIControllers;
 	std::vector< yam2d::Ref<AutoAttackFlagCarryingBot> > m_autoAttackFlagCarryingBots;
@@ -92,6 +95,13 @@ public:
 		if (playerName == "CharacterController")
 		{
 			return new CharacterController(ownerGameObject, gameController, type);
+		}
+
+		if (playerName == "MemberAI")
+		{
+			MemberAI* memberAI = new MemberAI(ownerGameObject, gameController, type);
+			m_memberAIControllers.push_back(memberAI);
+			return memberAI;
 		}
 
 		if (playerName == "MyAI")
@@ -308,16 +318,17 @@ public:
 int main(int argc, char *argv[])
 {
 	GameApp app(argc, argv, 1280, 800);
-	//app.disableLayer("Ground");
-	//app.disableLayer("ObjectSpawns");
-	//app.disableLayer("GroundTypeColliders");
+	app.disableLayer("Ground");
+	app.disableLayer("ObjectSpawns");
+	app.disableLayer("GroundTypeColliders");
 	//app.disableLayer("GroundMoveSpeed");
-	app.setLayerOpacity("GroundMoveSpeed", 0.7f); 
+	//app.setLayerOpacity("GroundMoveSpeed", 0.7f);
 
-	//app.setDefaultGame("level1.tmx", "MyAI", "DirectMoverAI", 4);
-	app.setDefaultGame("Level0.tmx", "AutoAttackFlagCarryingBot", "DirectMoverAI", 4);
+	app.setDefaultGame("Level0.tmx", "MemberAI", "DirectMoverAI", 4);
+	//app.setDefaultGame("Level0.tmx", "AutoAttackFlagCarryingBot", "DirectMoverAI", 4);
 	//app.setDefaultGame("Level0.tmx", "DirectMoverAI", "AutoAttackFlagCarryingBot", 4);
 	//app.setDefaultGame("Level0.tmx", "DirectMoverAI", "DirectMoverAI", 4);
+	//app.setDefaultGame("level1.tmx", "MyAI", "DirectMoverAI", 4);
 
 	MyPlayerController player1Controller;
 	app.setPlayer1Controller(&player1Controller);
