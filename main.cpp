@@ -11,7 +11,7 @@
 #include "JoystickController.h"
 
 #include "NewSources/MemberAI.h"
-
+#include "NewSources/Squad.h"
 
 
 class MyAI : public CharacterController
@@ -46,12 +46,6 @@ public:
 private:
 
 };
-
-
-
-
-
-
 
 class MyPlayerController : public PlayerController
 {
@@ -130,6 +124,14 @@ public:
 	// Called, when bots have spawn. Can be used some custom initialization after spawn.
 	virtual void onGameStarted(GameEnvironmentInfoProvider* environmentInfo)
 	{
+		squad->setBomb(environmentInfo->getDynamite());
+		squad->setHomeBase(environmentInfo->getMyHomeBase(this));
+		squad->setEnemyBase(environmentInfo->getEnemyHomeBase(this));
+		for (unsigned i = 0; i < m_memberAIControllers.size(); i++)
+		{
+			m_memberAIControllers[i]->onGameStarted(environmentInfo);
+		}
+#pragma region stuff
 		yam2d::esLogMessage("onGameStarted");
 		// Start going straight to dynamite
 		const yam2d::GameObject* dynamite = environmentInfo->getDynamite();
@@ -137,12 +139,18 @@ public:
 		{
 			m_directMoverAIControllers[i]->setMoveTargetObject(dynamite, 1.0f);
 		}
+#pragma endregion
 	}
 
 
 	// Called when game has ended. Can be used some cuystom deinitialization after game.
 	virtual void onGameOver(GameEnvironmentInfoProvider* environmentInfo, const std::string& gameResultString)
 	{
+		for (unsigned i = 0; i < m_memberAIControllers.size(); i++)
+		{
+			m_memberAIControllers[i]->onGameOver(environmentInfo, gameResultString);
+		}
+#pragma region stuff
 		yam2d::esLogMessage("onGameOver: %s wins!", gameResultString.c_str());
 		for (size_t i = 0; i < m_directMoverAIControllers.size(); ++i)
 		{
@@ -153,11 +161,16 @@ public:
 		{
 			m_autoAttackFlagCarryingBots[i]->resetTargetToShoot();
 		}
+#pragma endregion
 	}
 
 	// Called each frame. Update you player character controllers in this function.
 	virtual void onUpdate(GameEnvironmentInfoProvider* environmentInfo, float deltaTime)
 	{
+		for (unsigned i = 0; i < m_memberAIControllers.size(); i++)
+		{
+			m_memberAIControllers[i]->onUpdate(environmentInfo, deltaTime);
+		}
 	//	yam2d::esLogMessage("onUpdate");
 	}
 
@@ -179,8 +192,14 @@ public:
 	//		eventObject: yam2d::GameObject* = object which was dropped  (Dynamite).
 	virtual void onGameEvent(GameEnvironmentInfoProvider* environmentInfo, const std::string& eventName, yam2d::Object* eventObject)
 	{
+		for (unsigned i = 0; i < m_memberAIControllers.size(); i++)
+		{
+			m_memberAIControllers[i]->onGameEvent(environmentInfo, eventName, eventObject);
+		}
 		if (eventName == "ObjectSpawned" || eventName == "ObjectDeleted")
 		{
+
+#pragma region stuff
 			yam2d::GameObject* gameObject = dynamic_cast<yam2d::GameObject*>(eventObject);
 			assert(gameObject != 0);
 			// Don't print spawned weapon projectiles or explosions.
@@ -205,9 +224,12 @@ public:
 					yam2d::esLogMessage("%s: gameObjectType=%s", eventName.c_str(), gameObject->getType().c_str());
 				}
 			}
+#pragma endregion
 		}
 		else if (eventName == "ItemPicked")
 		{
+
+#pragma region stuff
 			ItemEvent* itemEvent = dynamic_cast<ItemEvent*>(eventObject);
 			assert(itemEvent != 0);
 			int teamIndex = itemEvent->getObject()->getGameObject()->getProperties()["teamIndex"].get<int>();
@@ -240,9 +262,12 @@ public:
 					m_directMoverAIControllers[i]->setMoveTargetObject(homeBase, 1.0f);
 				}
 			}
+#pragma endregion
 		}
 		else if (eventName == "ItemDropped")
 		{
+
+#pragma region stuff
 			ItemEvent* itemEvent = dynamic_cast<ItemEvent*>(eventObject);
 			assert(itemEvent != 0);
 			yam2d::esLogMessage("%s: gameObjectType=%s", eventName.c_str(), itemEvent->getItemGameObject()->getType().c_str());
@@ -260,6 +285,7 @@ public:
 			{
 				m_directMoverAIControllers[i]->setMoveTargetObject(dynamite, 1.0f);
 			}
+#pragma endregion
 		}
 		else
 		{
@@ -282,8 +308,14 @@ public:
 	//		eventObject: 0 always.
 	virtual void onGameObjectEvent(GameEnvironmentInfoProvider* environmentInfo, yam2d::GameObject* gameObject, const std::string& eventName, yam2d::Object* eventObject)
 	{
+		for (unsigned i = 0; i < m_memberAIControllers.size(); i++)
+		{
+			m_memberAIControllers[i]->onGameObjectEvent(environmentInfo, gameObject, eventName, eventObject);
+		}
 		if (eventName == "Collision")
 		{
+
+#pragma region stuff
 			CollisionEvent* collisionEvent = dynamic_cast<CollisionEvent*>(eventObject);
 			assert(collisionEvent != 0);
 			yam2d::GameObject* otherGo = collisionEvent->getOtherGameObject();
@@ -292,20 +324,27 @@ public:
 	//		yam2d::esLogMessage("%s %s: myBody=%s toObject=%s bodyType=%s, localNormal=<%.2f,%.2f> ", gameObject->getType().c_str(), eventName.c_str(), collisionEvent->getMyBody()->getType().c_str(),
 	//			otherType.c_str(),
 	//			collisionEvent->getOtherBody()->getType().c_str(), localNormal.x, localNormal.y);
+#pragma endregion
 		}
 		else if (eventName == "TakingDamage")
 		{
+
+#pragma region stuff
 			int teamIndex = gameObject->getProperties()["teamIndex"].get<int>();
 
 			TakingDamageEvent* damageEvent = dynamic_cast<TakingDamageEvent*>(eventObject);			
 			yam2d::GameObject* damageFromObject = damageEvent->getFromObject();
 			float newHealth = damageEvent->getNewHealth();
 			yam2d::esLogMessage("%s(team=%d) %s: fromObject=%s. New health: %3.1f", gameObject->getType().c_str(), teamIndex, eventName.c_str(), damageFromObject->getType().c_str(), newHealth);
+#pragma endregion
 		}
 		else if (eventName == "ZeroHealth")
 		{
+
+#pragma region stuff
 			int teamIndex = gameObject->getProperties()["teamIndex"].get<int>();
 			yam2d::esLogMessage("%s(team=%d) %s.", gameObject->getType().c_str(), teamIndex, eventName.c_str());
+#pragma endregion
 		}
 		else
 		{
@@ -322,7 +361,7 @@ int main(int argc, char *argv[])
 	app.disableLayer("ObjectSpawns");
 	app.disableLayer("GroundTypeColliders");
 	//app.disableLayer("GroundMoveSpeed");
-	//app.setLayerOpacity("GroundMoveSpeed", 0.7f);
+	app.setLayerOpacity("GroundMoveSpeed", 0.7f);
 
 	app.setDefaultGame("Level0.tmx", "MemberAI", "DirectMoverAI", 4);
 	//app.setDefaultGame("Level0.tmx", "AutoAttackFlagCarryingBot", "DirectMoverAI", 4);

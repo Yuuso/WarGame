@@ -13,7 +13,7 @@ OpenList::~OpenList()
 }
 
 
-SearchNode* OpenList::findFromOpenList(const yam2d::vec2& _pos) const
+SearchNode* OpenList::findFromOpenList(const __vec2& _pos) const
 {
 	for (auto &it : openList)
 	{

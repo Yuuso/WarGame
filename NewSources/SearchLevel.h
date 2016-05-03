@@ -1,9 +1,10 @@
 
 #pragma once
 
+#include "Position.h"
+
 #include <vector>
 #include <string>
-#include <vec2.h>
 
 
 class AIMapLayer;
@@ -16,12 +17,12 @@ public:
 	SearchLevel(AIMapLayer* _AIMap);
 	~SearchLevel();
 
-	float getG(SearchNode* _fromNode, const yam2d::vec2& _toPos) const;
-	float getH(const yam2d::vec2& _fromPos, const yam2d::vec2& _toPos) const;
+	float getG(SearchNode* _fromNode, const __vec2& _toPos) const;
+	float getH(const __vec2& _fromPos, const __vec2& _toPos) const;
 
 	bool isWalkable(const int _x, const int _y);
 
-	std::vector<yam2d::vec2> getAdjacentNodes(const int _x, const int _y);
+	std::vector<__vec2> getAdjacentNodes(const int _x, const int _y);
 
 private:
 	AIMapLayer* map;

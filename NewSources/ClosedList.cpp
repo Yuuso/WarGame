@@ -17,7 +17,7 @@ void ClosedList::addToClosedList(SearchNode* _node)
 }
 
 
-bool ClosedList::isInClosedList(const yam2d::vec2& _pos) const
+bool ClosedList::isInClosedList(const __vec2& _pos) const
 {
 	return closedList.find(_pos) != closedList.end();
 }

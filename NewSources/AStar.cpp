@@ -8,6 +8,9 @@
 PathData::PathData(AIMapLayer* _AIMap) : searchLevel(_AIMap), destination(nullptr)
 {
 }
+PathData::~PathData()
+{
+}
 
 
 AStar* pathFinder;
@@ -24,7 +27,7 @@ AStar::~AStar()
 SearchNode* AStar::getPath(const yam2d::vec2& _start, const yam2d::vec2& _end, GameEnvironmentInfoProvider* _environmentInfo)
 {
 	PathData data(_environmentInfo->getAILayer("GroundMoveSpeed"));
-	std::vector<yam2d::vec2> adjacentNodes; //"Static" vector
+	std::vector<__vec2> adjacentNodes; //"Static" vector
 
 	data.openList.insertToOpenList(new SearchNode(_start, data.searchLevel.getH(_start, _end), 0, nullptr));
 
@@ -44,9 +47,7 @@ SearchNode* AStar::getPath(const yam2d::vec2& _start, const yam2d::vec2& _end, G
 			for (unsigned i = 0; i < adjacentNodes.size(); i++)
 			{
 				if (data.closedList.isInClosedList(adjacentNodes[i]))
-				{
 					continue;
-				}
 
 				SearchNode* node = data.openList.findFromOpenList(adjacentNodes[i]);
 				if (node == nullptr)

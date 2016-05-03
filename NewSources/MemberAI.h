@@ -5,6 +5,7 @@
 
 
 class Squad;
+class SearchNode;
 
 class MemberAI : public CharacterController
 {
@@ -18,13 +19,13 @@ public:
 	virtual void update(float deltaTime);
 
 	// Called, when bots have spawn. Can be used some custom initialization after spawn.
-	virtual void onGameStarted(GameEnvironmentInfoProvider* environmentInfo);
+	void onGameStarted(GameEnvironmentInfoProvider* environmentInfo);
 
 	// Called when game has ended. Can be used some cuystom deinitialization after game.
-	virtual void onGameOver(GameEnvironmentInfoProvider* environmentInfo, const std::string& gameResultString);
+	void onGameOver(GameEnvironmentInfoProvider* environmentInfo, const std::string& gameResultString);
 
 	// Called each frame. Update you player character controllers in this function.
-	virtual void onUpdate(GameEnvironmentInfoProvider* environmentInfo, float deltaTime);
+	void onUpdate(GameEnvironmentInfoProvider* environmentInfo, float deltaTime);
 
 	// Called, when game event has ocurred.
 	// Event name tells the event in question, each event type may have eventObject data associated with the event.
@@ -42,7 +43,7 @@ public:
 	// - ItemDropped: 
 	//		Called when item has beed dropped by game object.
 	//		eventObject: ItemDropperdEvent* = Item dropped event
-	virtual void onGameEvent(GameEnvironmentInfoProvider* environmentInfo, const std::string& eventName, yam2d::Object* eventObject);
+	void onGameEvent(GameEnvironmentInfoProvider* environmentInfo, const std::string& eventName, yam2d::Object* eventObject);
 
 	// Send, when game object receives an event.
 	// Event name tells the event in question, each event type may have eventObject data associated with the event.
@@ -57,13 +58,15 @@ public:
 	// - ZeroHealth: 
 	//		Called when game object is going to die, because of zero health.
 	//		eventObject: 0 always.
-	virtual void onGameObjectEvent(GameEnvironmentInfoProvider* environmentInfo, yam2d::GameObject* gameObject, const std::string& eventName, yam2d::Object* eventObject);
+	void onGameObjectEvent(GameEnvironmentInfoProvider* environmentInfo, yam2d::GameObject* gameObject, const std::string& eventName, yam2d::Object* eventObject);
 
 private:
 
-	yam2d::Object* owner;
+	yam2d::GameObject* owner;
 	BotType type;
 	GameController* controller;
 
+	float destDistance;
+	SearchNode* destination;
 };
 

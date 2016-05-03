@@ -4,6 +4,7 @@
 #include "OpenList.h"
 #include "ClosedList.h"
 #include "SearchLevel.h"
+#include "Position.h"
 
 #include <vec2.h>
 #include <vector>
@@ -16,6 +17,7 @@ class AIMapLayer;
 struct PathData
 {
 	PathData(AIMapLayer* _AIMap);
+	~PathData();
 
 	OpenList openList;
 	ClosedList closedList;

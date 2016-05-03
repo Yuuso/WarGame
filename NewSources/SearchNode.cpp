@@ -2,7 +2,7 @@
 #include "SearchNode.h"
 
 
-SearchNode::SearchNode(const yam2d::vec2& _currentPos, const float _H, const float _deltaG, SearchNode* _previous) : previous(nullptr), pos(_currentPos), G(0.0f), H(_H), F(0.0f)
+SearchNode::SearchNode(const __vec2& _currentPos, const float _H, const float _deltaG, SearchNode* _previous) : previous(nullptr), pos(_currentPos), G(0.0f), H(_H), F(0.0f)
 {
 	resetPrev(_previous, _deltaG);
 }

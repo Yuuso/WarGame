@@ -4,9 +4,14 @@
 #include "Squad.h"
 #include "GameApp.h"
 #include "GameEvents.h"
+#include "SearchNode.h"
+#include "AStar.h"
+
+#include "GameObject.h"
 
 
-MemberAI::MemberAI(yam2d::GameObject* _owner, GameController* _gameController, BotType _botType) : CharacterController(_owner, _gameController, _botType)
+MemberAI::MemberAI(yam2d::GameObject* _owner, GameController* _gameController, BotType _botType) : CharacterController(_owner, _gameController, _botType), 
+destDistance(0.0f), destination(nullptr)
 {
 	owner = _owner;
 	type = _botType;
@@ -36,7 +41,14 @@ void MemberAI::update(float _deltaTime)
 	// Call update to base class
 	CharacterController::update(_deltaTime);
 
-	// TODO: Update...
+	//Movement
+	if (destination != nullptr)
+	{
+		if (moveDirectToPosition(destination->pos.asconstslmvec(), 0.0f) < 0.1f)
+		{
+			destination = destination->previous;
+		}
+	}
 }
 
 
@@ -54,7 +66,8 @@ void MemberAI::onGameOver(GameEnvironmentInfoProvider* environmentInfo, const st
 
 void MemberAI::onUpdate(GameEnvironmentInfoProvider* environmentInfo, float deltaTime)
 {
-	
+	if (destination == nullptr && squad->ready())
+		destination = pathFinder->getPath(owner->getPosition(), environmentInfo->getDynamite()->getPosition(), environmentInfo);
 }
 
 

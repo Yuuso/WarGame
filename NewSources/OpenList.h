@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <vec2.h>
+#include "Position.h"
 #include <vector>
 
 
@@ -13,7 +13,7 @@ public:
 	OpenList();
 	~OpenList();
 
-	SearchNode* findFromOpenList(const yam2d::vec2& _pos) const;
+	SearchNode* findFromOpenList(const __vec2& _pos) const;
 	void insertToOpenList(SearchNode* _node);
 	void sortOpenList();
 	SearchNode* removeSmallestFromOpenList();

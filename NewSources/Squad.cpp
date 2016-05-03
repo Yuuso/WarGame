@@ -2,10 +2,13 @@
 #include "Squad.h"
 #include "AStar.h"
 
+#include "GameObject.h"
+#include "GameEnvironmentInfoProvider.h"
+
 
 Squad* squad = nullptr;
 
-Squad::Squad()
+Squad::Squad() : bomb(nullptr), homeBase(nullptr), enemyBase(nullptr)
 {
 	if (pathFinder == nullptr)
 		pathFinder = new AStar;
@@ -15,7 +18,21 @@ Squad::~Squad()
 }
 
 
-bool Squad::addAlly(yam2d::Object* _ally)
+void Squad::setBomb(const yam2d::GameObject* _bomb)
+{
+	bomb = _bomb;
+}
+void Squad::setHomeBase(const yam2d::GameObject* _home)
+{
+	homeBase = _home;
+}
+void Squad::setEnemyBase(const yam2d::GameObject* _enemy)
+{
+	enemyBase = _enemy;
+}
+
+
+bool Squad::addAlly(yam2d::GameObject* _ally)
 {
 	for (unsigned i = 0; i < allies.size(); i++)
 	{
@@ -29,7 +46,7 @@ bool Squad::addAlly(yam2d::Object* _ally)
 }
 
 
-bool Squad::addEnemy(yam2d::Object* _enemy)
+bool Squad::addEnemy(yam2d::GameObject* _enemy)
 {
 	for (unsigned i = 0; i < enemies.size(); i++)
 	{
@@ -40,4 +57,26 @@ bool Squad::addEnemy(yam2d::Object* _enemy)
 	}
 	enemies.push_back(_enemy);
 	return true;
+}
+
+
+const yam2d::vec2 Squad::getBombPosition()
+{
+	return bomb->getPosition();
+}
+const yam2d::vec2 Squad::getHomeBasePosition()
+{
+	return homeBase->getPosition();
+}
+const yam2d::vec2 Squad::getEnemyBasePosition()
+{
+	return enemyBase->getPosition();
+}
+
+
+bool Squad::ready()
+{
+	if (bomb && homeBase && enemyBase)
+		return true;
+	return false;
 }

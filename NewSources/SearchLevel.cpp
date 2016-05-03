@@ -12,7 +12,7 @@ SearchLevel::~SearchLevel()
 }
 
 
-float SearchLevel::getG(SearchNode* _fromNode, const yam2d::vec2& _toPos) const
+float SearchLevel::getG(SearchNode* _fromNode, const __vec2& _toPos) const
 {
 	float dx = (float) (_toPos.x - _fromNode->pos.x);
 	float dy = (float) (_toPos.y - _fromNode->pos.y);
@@ -20,7 +20,7 @@ float SearchLevel::getG(SearchNode* _fromNode, const yam2d::vec2& _toPos) const
 }
 
 
-float SearchLevel::getH(const yam2d::vec2& _fromPos, const yam2d::vec2& _toPos) const
+float SearchLevel::getH(const __vec2& _fromPos, const __vec2& _toPos) const
 {
 	float dx = (float) (_toPos.x - _toPos.x);
 	float dy = (float) (_toPos.y - _toPos.y);
@@ -37,16 +37,16 @@ bool SearchLevel::isWalkable(const int _x, const int _y)
 }
 
 
-std::vector<yam2d::vec2> SearchLevel::getAdjacentNodes(const int _x, const int _y)
+std::vector<__vec2> SearchLevel::getAdjacentNodes(const int _x, const int _y)
 {
-	std::vector<yam2d::vec2> result;
+	std::vector<__vec2> result;
 	if (isWalkable(_x + 1, _y))
-		result.push_back(yam2d::vec2(_x + 1, _y));
+		result.push_back(__vec2(_x + 1, _y));
 	if (isWalkable(_x - 1, _y))
-		result.push_back(yam2d::vec2(_x - 1, _y));
+		result.push_back(__vec2(_x - 1, _y));
 	if (isWalkable(_x, _y + 1))
-		result.push_back(yam2d::vec2(_x, _y + 1));
+		result.push_back(__vec2(_x, _y + 1));
 	if (isWalkable(_x, _y - 1))
-		result.push_back(yam2d::vec2(_x, _y - 1));
+		result.push_back(__vec2(_x, _y - 1));
 	return result;
 }
