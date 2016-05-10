@@ -76,6 +76,9 @@ public:
 	// Called, when bots are spawn. Shall return correct player character controller for bot if given name.
 	virtual CharacterController* createPlayerCharacterController(GameController* gameController, yam2d::GameObject* ownerGameObject, const std::string& playerName, BotType type)
 	{
+		if (squad == nullptr)
+			squad = new Squad(this);
+
 		if (playerName == "JoystickController")
 		{
 			//if (m_joystickControllers.size()==0) // If only 1 joystick supported.
@@ -124,13 +127,14 @@ public:
 	// Called, when bots have spawn. Can be used some custom initialization after spawn.
 	virtual void onGameStarted(GameEnvironmentInfoProvider* environmentInfo)
 	{
-		squad->setBomb(environmentInfo->getDynamite());
-		squad->setHomeBase(environmentInfo->getMyHomeBase(this));
-		squad->setEnemyBase(environmentInfo->getEnemyHomeBase(this));
-		for (unsigned i = 0; i < m_memberAIControllers.size(); i++)
+		for (unsigned i = 0; i < squad->getAllies().size(); i++)
 		{
-			m_memberAIControllers[i]->onGameStarted(environmentInfo);
+			squad->getAllies()[i]->onGameStarted(environmentInfo);
 		}
+		squad->setBomb(environmentInfo->getDynamite());
+		squad->setHomeBase(environmentInfo->getMyHomeBase(squad->getCreator()));
+		squad->setEnemyBase(environmentInfo->getEnemyHomeBase(squad->getCreator()));
+		squad->confirmBases();
 #pragma region stuff
 		yam2d::esLogMessage("onGameStarted");
 		// Start going straight to dynamite
@@ -143,7 +147,7 @@ public:
 	}
 
 
-	// Called when game has ended. Can be used some cuystom deinitialization after game.
+	// Called when game has ended. Can be used some custom deinitialization after game.
 	virtual void onGameOver(GameEnvironmentInfoProvider* environmentInfo, const std::string& gameResultString)
 	{
 		for (unsigned i = 0; i < m_memberAIControllers.size(); i++)
@@ -198,9 +202,14 @@ public:
 		}
 		if (eventName == "ObjectSpawned" || eventName == "ObjectDeleted")
 		{
+			yam2d::GameObject* gameObject = dynamic_cast<yam2d::GameObject*>(eventObject);
+
+			if (gameObject->getType() == "Soldier" || gameObject->getType() == "Robot")
+			{
+				squad->addEnemy(gameObject);
+			}
 
 #pragma region stuff
-			yam2d::GameObject* gameObject = dynamic_cast<yam2d::GameObject*>(eventObject);
 			assert(gameObject != 0);
 			// Don't print spawned weapon projectiles or explosions.
 			if (gameObject->getType() != "Missile"
@@ -363,7 +372,7 @@ int main(int argc, char *argv[])
 	//app.disableLayer("GroundMoveSpeed");
 	app.setLayerOpacity("GroundMoveSpeed", 0.7f);
 
-	app.setDefaultGame("Level0.tmx", "MemberAI", "DirectMoverAI", 4);
+	app.setDefaultGame("Level0.tmx", "DirectMoverAI", "MemberAI", 4);
 	//app.setDefaultGame("Level0.tmx", "AutoAttackFlagCarryingBot", "DirectMoverAI", 4);
 	//app.setDefaultGame("Level0.tmx", "DirectMoverAI", "AutoAttackFlagCarryingBot", 4);
 	//app.setDefaultGame("Level0.tmx", "DirectMoverAI", "DirectMoverAI", 4);

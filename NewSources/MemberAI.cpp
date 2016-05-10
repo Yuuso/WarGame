@@ -16,11 +16,21 @@ destDistance(0.0f), destination(nullptr)
 	owner = _owner;
 	type = _botType;
 	controller = _gameController;
+	squad->addAlly(this);
 
-	if (squad == nullptr)
-		squad = new Squad;
-
-	squad->addAlly(owner);
+	if (isSoldier())
+	{
+		task = NADE;
+	}
+	else if (isRobot())
+	{
+		task = MINE;
+	}
+	else
+	{
+		//?
+		assert(false);
+	}
 }
 MemberAI::~MemberAI()
 {
@@ -41,13 +51,54 @@ void MemberAI::update(float _deltaTime)
 	// Call update to base class
 	CharacterController::update(_deltaTime);
 
-	//Movement
-	if (destination != nullptr)
+	switch (task)
 	{
-		if (moveDirectToPosition(destination->pos.asconstslmvec(), 0.0f) < 0.1f)
+	case MINE:
+		//Goto homebase and set mines
+		tryDropMine(yam2d::vec2(1.0f));
+		break;
+
+	case NADE:
+		//Throw grenade
+		tryThrowGrenade(yam2d::vec2(1.0f));
+		break;
+
+	case DEFEND:
+		//Fire at enemy from cover
+		break;
+
+	case ATTACK:
+		//Fire aggressively at the enemy and advance
+		break;
+
+	case GETBOMB:
+		//Retrieve the bomb
+		break;
+
+	case ANELE:
+		//Run for the enemy base
+		break;
+
+	case REPOSITION:
+		//Find new cover
+		if (destination)
 		{
-			destination = destination->previous;
+			if (moveDirectToPosition(destination->pos.asconstslmvec(), 1.0f) < 0.1f)
+			{
+				if (destination->previous)
+				{
+					destination = destination->previous;
+				}
+			}
 		}
+		break;
+
+	case DODGE:
+		//Run away from fire
+		break;
+
+	default:
+		break;
 	}
 }
 
@@ -67,7 +118,7 @@ void MemberAI::onGameOver(GameEnvironmentInfoProvider* environmentInfo, const st
 void MemberAI::onUpdate(GameEnvironmentInfoProvider* environmentInfo, float deltaTime)
 {
 	if (destination == nullptr && squad->ready())
-		destination = pathFinder->getPath(owner->getPosition(), environmentInfo->getDynamite()->getPosition(), environmentInfo);
+		destination = pathFinder->getPath(owner->getPosition(), squad->getHomeBasePosition(), environmentInfo);
 }
 
 

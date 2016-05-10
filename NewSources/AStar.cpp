@@ -27,7 +27,7 @@ AStar::~AStar()
 SearchNode* AStar::getPath(const yam2d::vec2& _start, const yam2d::vec2& _end, GameEnvironmentInfoProvider* _environmentInfo)
 {
 	PathData data(_environmentInfo->getAILayer("GroundMoveSpeed"));
-	std::vector<__vec2> adjacentNodes; //"Static" vector
+	std::vector<__vec2> adjacentNodes;
 
 	data.openList.insertToOpenList(new SearchNode(_start, data.searchLevel.getH(_start, _end), 0, nullptr));
 

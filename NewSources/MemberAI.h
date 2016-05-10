@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "Task.h"
+
 #include "PlayerController.h"
 
 
@@ -59,6 +61,9 @@ public:
 	//		Called when game object is going to die, because of zero health.
 	//		eventObject: 0 always.
 	void onGameObjectEvent(GameEnvironmentInfoProvider* environmentInfo, yam2d::GameObject* gameObject, const std::string& eventName, yam2d::Object* eventObject);
+	
+
+	yam2d::GameObject* ownerObject(){ return owner; }
 
 private:
 
@@ -68,5 +73,7 @@ private:
 
 	float destDistance;
 	SearchNode* destination;
+
+	Task task;
 };
 
